@@ -1,9 +1,8 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import App from '../index'
 import RaisedButton from 'material-ui/RaisedButton'
-import Badge from 'material-ui/Badge'
 import TextField from 'material-ui/TextField'
+import Paper from 'material-ui/Paper'
+import $ from "jquery"
 import {
   Table,
   TableBody,
@@ -12,73 +11,64 @@ import {
   TableRow,
   TableRowColumn
 } from 'material-ui/Table'
-import injectTapEventPlugin from 'react-tap-event-plugin'
-import {Tabs, Tab} from 'material-ui/Tabs'
-import AppBar from 'material-ui/AppBar'
 
 class Pairing extends React.Component {
-
-	constructor(props) {
-		super(props);
-		this.state = {
-			pairing:[],
-      groups:{
-        title:"",
-        GroupSize:"",
-        Pairs:[]
+  constructor (props) {
+    super(props)
+    this.state = {
+      pairing: [],
+      groups: {
+        title: '',
+        Pairs: []
 
       }
-	  }
-	this.pairingList = this.pairingList.bind(this);
-    this.add = this.add.bind(this);
-    this.onChange = this.onChange.bind(this);
-     
-    
-   }
+    }
+    this.pairingList = this.pairingList.bind(this)
+    this.add = this.add.bind(this)
+    this.onChange = this.onChange.bind(this)
+  }
 
-    add () {
-      var states = this.state.groups;
-      var size=this.state.pairing.length;
-      var pairing=this.state.pairing;
-      states["GroupSize"]=Number(size);
-      states["title"]=this.state.groups["title"]
-      states["Pairs"]=pairing;
-      this.setState({
-        groups:states
-      });
-      console.log(this.state.groups)
-      var that=this
-      $.ajax({
-        type: "PUT",
-        url: "http://localhost:3000/api/student/update",
-        data:{"student":that.state.pairing},
-        success: function(res){
-          console.log('sucesss');
-        }
-      });
-      $.ajax({
-        type: "POST",
-        url: "http://localhost:3000/api/student/createGroupName",
-        data:that.state.groups,
-        success: function(res){
-          console.log('add Group');
-        }
-      });
+  add () {
+    var states = this.state.groups
+    var pairing = this.state.pairing
+    states['title'] = this.state.groups['title']
+    states['Pairs'] = pairing
+    this.setState({
+      groups: states
+    })
+    console.log(this.state.groups)
+    var that = this
+    $.ajax({
+      type: 'PUT',
+      url: '/api/update',
+      data: {'student': that.state.pairing},
+      success: function (res) {
+        console.log('sucesss')
+      }
+    })
+    $.ajax({
+      type: 'POST',
+      url: '/api/groups',
+      data: that.state.groups,
+      success: function (res) {
+        console.log('add Group')
+      }
+    })
+    
   }
-  onChange(e) {
-  var name = e.target.id;
-  var value = e.target.value;
-  console.log(name)
-  console.log(value)
-  this.state.groups[name] = value;
+  onChange (e) {
+    var name = e.target.id
+    var value = e.target.value
+    console.log(name)
+    console.log(value)
+    this.state.groups[name] = value
   }
- 
-   
+
   pairingList () {
-    var that = this;
+    var that = this
     $.ajax({
       type: 'GET',
-      url: ' http://localhost:3000/api/student/',
+      url: ' /api/student/',
       data: {},
       success: function (dataB) {
         function randomaize (data) {
@@ -107,7 +97,7 @@ class Pairing extends React.Component {
           for (var i = 0; i < arr.length; i++) {
             if (arr[i].Level - 1 === correntStudent.Level || arr[i].Level + 1 === correntStudent.Level) {
               if (correntStudent.WhoPairedWith.indexOf(arr[i].StudentName) === -1) {
-             	// debugger
+                // debugger
                 result[counter].push(arr[i])
                 var index = arr.indexOf(arr[i])
                 arr.splice(index, 1)
@@ -136,43 +126,44 @@ class Pairing extends React.Component {
       error: function (request, status, error) {
         console.log(error)
       }
-  });
-      }
+    })
+  }
 
   render () {
     return (
-      <div><h1> Pairing List </h1>
-      <TextField
-      style={{fontSize: '20px'}}
-      floatingLabelText=" Enter a Sprint Name:"
-      floatingLabelFixed={true}
-      floatingLabelStyle={{ fontSize: '20px',fontWeight:"bold" , color:"black" }}
-      onChange={this.onChange}
-      id="title"
-      /><br />
-      <RaisedButton label="Create"  buttonStyle={{ background:"#FF1493"}}  onClick={this.pairingList}  />
-      <Table>
-      <TableHeader>
-      <TableRow>
-      <TableHeaderColumn>Student1</TableHeaderColumn>
-      <TableHeaderColumn>Level1</TableHeaderColumn>
-      <TableHeaderColumn>Student2</TableHeaderColumn>
-      <TableHeaderColumn>Level2</TableHeaderColumn>
-      </TableRow>
-      </TableHeader>
-      <TableBody>
-      {this.state.pairing.map((student,index) =>
-        <TableRow>
-        <TableRowColumn>{student[0].StudentName}</TableRowColumn>
-        <TableRowColumn>{student[0].Level}</TableRowColumn>
-        <TableRowColumn>{student[1].StudentName}</TableRowColumn>
-        <TableRowColumn>{student[1].Level}</TableRowColumn>
-        </TableRow>
-        )}
-      </TableBody>
-      </Table>
-      <RaisedButton label="Submit"  buttonStyle={{ background:"#FF1493"}}   onChange={this.onChange}  onClick={this.add}   /></div>
-      );
+        <Paper zDepth={2} style={{alignText: 'center', margin: '1em', padding: '1em'}}>
+          <TextField
+              style={{fontSize: '20px'}}
+              floatingLabelText=' Enter a Sprint Name:'
+              floatingLabelFixed
+              floatingLabelStyle={{ fontSize: '20px', fontWeight: 'bold', color: 'black' }}
+              onChange={this.onChange}
+              id='title'
+          /><br />
+          <RaisedButton label='Create' buttonStyle={{ background: '#FF1493'}} onClick={this.pairingList} />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderColumn>Student1</TableHeaderColumn>
+                <TableHeaderColumn>Level1</TableHeaderColumn>
+                <TableHeaderColumn>Student2</TableHeaderColumn>
+                <TableHeaderColumn>Level2</TableHeaderColumn>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {this.state.pairing.map((student, index) =>
+                  <TableRow>
+                    <TableRowColumn>{student[0].StudentName}</TableRowColumn>
+                    <TableRowColumn>{student[0].Level}</TableRowColumn>
+                    <TableRowColumn>{student[1].StudentName}</TableRowColumn>
+                    <TableRowColumn>{student[1].Level}</TableRowColumn>
+                  </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <RaisedButton label='Submit' buttonStyle={{ background: '#FF1493'}} onChange={this.onChange} onClick={this.add} />
+        </Paper> 
+    )
   }
 }
 export default Pairing

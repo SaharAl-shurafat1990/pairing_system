@@ -1,8 +1,8 @@
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
+var mongoURI = 'mongodb://admin:admin@ds129770.mlab.com:29770/paring';
+// var mongoURI = mongoose.connect('mongodb://localhost/pairing-system');
 
-mongoose.connect('mongodb://localhost/pairing')
-// to active the debugger for MongoDB uncomment the line below
-// mongoose.set('debug', true);
+mongoose.connect(mongoURI)
 var db = mongoose.connection
 
 db.on('error', console.error.bind(console, 'connection error:'))
